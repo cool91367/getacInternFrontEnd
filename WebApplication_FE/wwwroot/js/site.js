@@ -1,7 +1,10 @@
 ﻿var serverUrl = 'https://localhost:5001/api';
 var topics;// complete data from DB
-async function ajaxRequest(url) {
 
+// setting signalR's connect
+var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:5001/chatHub").build();
+
+async function ajaxRequest(url) {
     const result = await fetch(url);
     const jsonResult = await result.json();
     return jsonResult;
@@ -28,6 +31,10 @@ window.onload = async function() {
 
 async function showTopics() {
     console.log("Todo: show topics content");
+    // invoke server's hub
+    connection.invoke("SendMessage", "hello").catch(function (err) {
+        return console.error(err.toString());
+    });
 }
 
 function onChangeTopics(formObj) {
@@ -49,3 +56,16 @@ function onChangeTopics(formObj) {
         }
     }
 }
+
+// listen to server's hub
+connection.on("ReceiveMessage", async function (data) {
+    console.log(data);
+    });
+
+
+// check if signalR is connected
+connection.start().then(function () {
+    console.log('signalR connect successful!');
+}).catch(function (err) {
+    return console.error(err.toString());
+});
