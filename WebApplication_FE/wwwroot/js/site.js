@@ -3,6 +3,7 @@ var serverApiUrl = serverUrl + "/api/"
 var serverSignalR = serverUrl + "/chatHub";
 var topics;// complete data from DB
 var contentForm;// form object
+var contentHtml = document.getElementById('ContentText');
 
 // setting signalR's connect
 var connection = new signalR.HubConnectionBuilder().withUrl(serverSignalR).build();
@@ -11,6 +12,24 @@ async function ajaxRequest(url) {
     const result = await fetch(url);
     const jsonResult = await result.json();
     return jsonResult;
+}
+
+// chanege time format
+function formatDate(date) {
+    var monthNames = [
+        "January", "February", "March",
+        "April", "May", "June", "July",
+        "August", "September", "October",
+        "November", "December"
+    ];
+    var day = date.getDate();
+    var monthIndex = date.getMonth();
+    var year = date.getFullYear();
+    var minute = date.getMinutes();
+    var hour = date.getHours();
+    var second = date.getSeconds();
+
+    return year + ' ' + monthNames[monthIndex] + ' ' + day + '   ' + hour + ':' + minute + ':' + second;
 }
 
 // show topics to web page
@@ -41,9 +60,8 @@ async function showTopics() {
 }
 
 function onChangeTopics() {
-    // get html element
-    var contentHtml = document.getElementById('ContentText');
     contentHtml.innerHTML = "";
+    var time;
 
     // show topics' content in order;
     contentForm = document.getElementById('contentForm').topics;
@@ -52,8 +70,11 @@ function onChangeTopics() {
             contentHtml.innerHTML += "<h3>" + contentForm[i].value + "： </h3>";
             for (var j = 0; j < topics.length; j++) {
                 if (topics[j].Topic == contentForm[i].value) {
-                    for (var k = 0; k < topics[j].Content.length;k++)
-                        contentHtml.innerHTML += "<ul><li>" + topics[j].Content[k].SendTime + "</li> " + "<ul><li>" + topics[j].Content[k].SenderId +"：" + topics[j].Content[k].ChatString + "</li></ul></ul>";
+                    for (var k = 0; k < topics[j].Content.length; k++) {
+                        // reformatDate
+                        time = formatDate(new Date(topics[j].Content[k].SendTime))
+                        contentHtml.innerHTML += "<ul><li>" + time + "</li> " + "<ul><li>" + topics[j].Content[k].SenderId + "：" + topics[j].Content[k].ChatString + "</li></ul></ul>";
+                    }
                 }
             }
         }
