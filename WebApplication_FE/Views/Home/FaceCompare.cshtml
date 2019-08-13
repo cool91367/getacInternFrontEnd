@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "FaceCompare";
+}
+
+
+<div class="container">
+    <div id="result" style="display:none" class="alert alert-success alert-dismissible fade show" role="alert">
+        <p id="resultText">complete</p>
+        <button id="close" type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="row">
+        <div class="col-11">
+            <h1 style="text-align:center">FaceCompare</h1>
+        </div>
+    </div>
+    <div class="row">
+        <!--img space-->
+        <div class="col-5 round-border" style="height:516px;display:flex;justify-content:center;align-items:center;">
+            <div style="">
+                <img id="img1" src="~/NewFolder1/1.jpg" style="max-width:450px; max-height:510px" alt="Image" title="title">
+            </div>
+        </div>
+        <div class="col-5 offset-1 round-border" style="height:516px;display:flex;justify-content:center;align-items:center;">
+            <div>
+                <img id="img2" src="~/NewFolder1/2.jpg" style="max-width:450px; max-height:510px" alt="Image" title="title">
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <!--input space-->
+        <div class="col-5">
+            <input type="text" id="inputUrl1" class="form-control" placeholder="Input Img Url" style="height:30px">
+        </div>
+        <div class="col-5 offset-1">
+            <input type="text" id="inputUrl2" class="form-control" placeholder="Input Img Url" style="height:30px">
+        </div>
+    </div>
+    <br />
+    <!--button-->
+    <div class="row">
+        <input type="button" id="compare" class="btn btn-info" value="START COMPARE" style="width:1030px; height:50px" />
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/faceRec.js" asp-append-version="true"></script>
+}

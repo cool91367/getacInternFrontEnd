@@ -64,3 +64,9 @@ body {
 ul li {
     list-style-type: none;
 }
+
+.input-border {
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+}
