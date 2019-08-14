@@ -38,6 +38,12 @@
                 </div>
                 <div>
                     <h3 id="userId"></h3>
+                    <button class="button" id="RegisterButton" style="display: none">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Register">Register</a>
+                    </button>
+                    <button class="button" id="LoginButton" style="display: none">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
+                    </button>
                 </div>
             </div>
         </nav>
@@ -79,3 +85,5 @@
     @RenderSection("Scripts", required: false)
 </body>
 </html>
+
+<script>showAuthButton()</script>

@@ -121,6 +121,60 @@ function refreshContent() {
     contentHtml.scrollTop = contentHtml.scrollHeight;
 }
 
+async function authResponse(authType) {
+    if (authType == 'Logout') {
+        //TODO
+    }
+    else {
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+        let user = { "Username": username, "Password": password };
+        await fetch(serverApiUrl + 'auth/' + authType,
+            {
+                credentials: 'include', // Credentials must be include to solve CORS issue
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(user),
+                method: 'POST',
+            })
+            .then(response => response.text())
+            .then(msg => {
+                alert(msg);
+                if (msg == authType + ' succesfully') {
+                    if (authType == 'Register') {
+                        window.location.replace("https://localhost:3001/Auth/Login");
+                    }
+                    else {
+                        window.location.replace("https://localhost:3001");
+                    }
+                }
+            });
+
+    }
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i].trim();
+        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+    }
+    return null;
+}
+
+function showAuthButton() {
+    var cookies = getCookie(".applicationname");
+    if (cookies != null) {
+        //TODO
+    }
+    else {
+        document.getElementById("RegisterButton").style.display = "inline";
+        document.getElementById("LoginButton").style.display = "inline";
+    }
+}
+
 // listen to server's hub
 connection.on("ReceiveMessage", async function (data) {
     topics = JSON.parse(data);
