@@ -40,10 +40,6 @@ window.onload = async function() {
     // AjaxRequest
     topics = await ajaxRequest(serverApiUrl + 'chats');
 
-    // create a temp Id
-    tempId = Math.floor(Math.random() * 1000000000);
-    document.getElementById('userId').innerHTML = 'userId ： ' + tempId;
-
     // output topic name to topic list
     var tempHtml = ""
     tempHtml = "<form id = 'contentForm'>Topics: <br>";
@@ -136,6 +132,7 @@ async function authResponse(authType) {
                 alert(msg);
                 if (msg == authType + ' succesfully') {
                     window.location.replace("https://localhost:3001");
+                    setCookie('usr', getCookie('usr'), 0);
                 }
             });
     }
@@ -161,6 +158,7 @@ async function authResponse(authType) {
                     }
                     else {
                         window.location.replace("https://localhost:3001");
+                        setCookie('usr', username, 1);    // Set cookies exist 1 day
                     }
                 }
             });
@@ -178,6 +176,13 @@ function getCookie(cname) {
     return null;
 }
 
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toGMTString();
+    document.cookie = cname + "=" + cvalue + "; " + expires + "; " + "path=/";
+}
+
 function showAuthButton() {
     var cookies = getCookie(".applicationname");
     if (cookies != null) {
@@ -186,6 +191,13 @@ function showAuthButton() {
     else {
         document.getElementById("RegisterButton").style.display = "inline";
         document.getElementById("LoginButton").style.display = "inline";
+    }
+}
+
+function showUser() {
+    var cookies = getCookie("usr");
+    if (cookies != null) {
+        document.getElementById("userId").innerHTML = "userId ： " + cookies;
     }
 }
 
