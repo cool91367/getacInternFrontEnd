@@ -123,7 +123,21 @@ function refreshContent() {
 
 async function authResponse(authType) {
     if (authType == 'Logout') {
-        //TODO
+        await fetch(serverApiUrl + 'auth/' + authType,
+            {
+                credentials: 'include', // Credentials must be include to solve CORS issue
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                method: 'POST',
+            })
+            .then(response => response.text())
+            .then(msg => {
+                alert(msg);
+                if (msg == authType + ' succesfully') {
+                    window.location.replace("https://localhost:3001");
+                }
+            });
     }
     else {
         var username = document.getElementById('username').value;
@@ -167,7 +181,7 @@ function getCookie(cname) {
 function showAuthButton() {
     var cookies = getCookie(".applicationname");
     if (cookies != null) {
-        //TODO
+        document.getElementById("LogoutButton").style.display = "inline";
     }
     else {
         document.getElementById("RegisterButton").style.display = "inline";
