@@ -10,7 +10,7 @@ var inputText = document.getElementById("textBox");
 var connection = new signalR.HubConnectionBuilder().withUrl(serverSignalR).build();
 
 async function ajaxRequest(url) {
-    const result = await fetch(url);
+    const result = await fetch(url, { credentials: 'include' }); // Credentials must be include to solve CORS issue
     const jsonResult = await result.json();
     return jsonResult;
 }
@@ -38,11 +38,16 @@ window.onload = async function() {
     var topicArea = document.getElementById('TopicsArea');
 
     // AjaxRequest
-    topics = await ajaxRequest(serverApiUrl + 'chats');
-
-    // create a temp Id
-    tempId = Math.floor(Math.random() * 1000000000);
-    document.getElementById('userId').innerHTML = 'userId ： ' + tempId;
+    try {
+        topics = await ajaxRequest(serverApiUrl + 'chats');
+    }
+    catch (e) {
+        var currentPagePath = window.location.pathname;
+        var currentPageName = currentPagePath.substring(currentPagePath.lastIndexOf('/') + 1);
+        if (currentPageName == "Index") {
+            alert("Not login yet!!!");
+        }
+    }
 
     // output topic name to topic list
     var tempHtml = ""
@@ -63,7 +68,7 @@ async function sendMessage() {
     // create a message array and prepare to send
     for (var i = 0; i < topicForm.length; i++) {
         if (topicForm[i].checked) {
-            var chatLineObject = new chatLine(inputText.value, tempId);
+            var chatLineObject = new chatLine(inputText.value, getCookie('usr'));
             var chatObject = new chat(topicForm[i].value, chatLineObject);
             currentTime = chatLineObject.sendTime;
             chatArray.push(chatObject);
@@ -104,7 +109,7 @@ function onChangeTopics() {
                     for (var k = 0; k < topics[j].content.length; k++) {
                         // reformatDate
                         time = formatDate(new Date(topics[j].content[k].sendTime))
-                        if (topics[j].content[k].senderId == tempId)
+                        if (topics[j].content[k].senderId == getCookie('usr'))
                             contentHtml.innerHTML += "<ul><li style='text-align:right'>" + time + "</li> " + "<ul><li style='text-align:right'>" + topics[j].content[k].senderId + "：" + topics[j].content[k].chatString + "</li></ul></ul>";
                         else
                             contentHtml.innerHTML += "<ul><li>" + time + "</li> " + "<ul><li>" + topics[j].content[k].senderId + "：" + topics[j].content[k].chatString + "</li></ul></ul>";
@@ -119,6 +124,90 @@ function refreshContent() {
     onChangeTopics();
     // scroll to bottom
     contentHtml.scrollTop = contentHtml.scrollHeight;
+}
+
+async function authResponse(authType) {
+    if (authType == 'Logout') {
+        await fetch(serverApiUrl + 'auth/' + authType,
+            {
+                credentials: 'include', // Credentials must be include to solve CORS issue
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                method: 'POST',
+            })
+            .then(response => response.text())
+            .then(msg => {
+                alert(msg);
+                if (msg == authType + ' succesfully') {
+                    window.location.replace("https://localhost:3001/Auth/Login");
+                    setCookie('usr', getCookie('usr'), 0);
+                }
+            });
+    }
+    else {
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+        let user = { "Username": username, "Password": password };
+        await fetch(serverApiUrl + 'auth/' + authType,
+            {
+                credentials: 'include', // Credentials must be include to solve CORS issue
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(user),
+                method: 'POST',
+            })
+            .then(response => response.text())
+            .then(msg => {
+                alert(msg);
+                if (msg == authType + ' succesfully') {
+                    if (authType == 'Register') {
+                        window.location.replace("https://localhost:3001/Auth/Login");
+                    }
+                    else {
+                        window.location.replace("https://localhost:3001/Home/Index");
+                        setCookie('usr', username, 1);    // Set cookies exist 1 day
+                    }
+                }
+            });
+
+    }
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i].trim();
+        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+    }
+    return null;
+}
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toGMTString();
+    document.cookie = cname + "=" + cvalue + "; " + expires + "; " + "path=/";
+}
+
+function showAuthButton() {
+    var cookies = getCookie(".applicationname");
+    if (cookies != null) {
+        document.getElementById("LogoutButton").style.display = "inline";
+    }
+    else {
+        document.getElementById("RegisterButton").style.display = "inline";
+        document.getElementById("LoginButton").style.display = "inline";
+    }
+}
+
+function showUser() {
+    var cookies = getCookie("usr");
+    if (cookies != null) {
+        document.getElementById("userId").innerHTML = "userId ： " + cookies;
+    }
 }
 
 // listen to server's hub

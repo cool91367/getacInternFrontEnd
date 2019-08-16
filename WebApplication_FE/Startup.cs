@@ -57,7 +57,7 @@ namespace WebApplication_FE
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Auth}/{action=Login}/{id?}");
             });
         }
     }
