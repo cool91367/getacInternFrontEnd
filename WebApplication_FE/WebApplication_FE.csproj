@@ -21,7 +21,8 @@
 
 
   <ItemGroup>
-    <Folder Include="wwwroot\NewFolder1\" />
+    <Folder Include="wwwroot\B3Image\" />
+    <Folder Include="wwwroot\ImageDatabase\" />
   </ItemGroup>
 
 </Project>
