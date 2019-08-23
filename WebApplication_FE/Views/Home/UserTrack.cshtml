@@ -1,0 +1,77 @@
+@{
+    ViewData["Title"] = "User Track Log";
+}
+<h1>@ViewData["Title"]</h1>
+
+<head>
+    <!-- CSS -->
+    <style>
+        .my-custom-scrollbar {
+        position: relative;
+        height: 400px;
+        overflow: auto;
+        }
+        .table-wrapper-scroll-y {
+        display: block;
+        font-size: 12px;
+        }
+        .table-row-highlight {
+        background-color: #00FF7F;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <div class="userTrackTextBox" id="userTrackTextBox">
+    </div> -->
+    <div class="table-wrapper-scroll-y my-custom-scrollbar">
+        <table class="table table-bordered table-striped mb-0" id="userTrackTable">
+            <thead>
+                <tr>
+                    <th scope="col">DateTime</th>
+                    <th scope="col">Level</th>
+                    <th scope="col">RequestIP</th>
+                    <th scope="col">Controller</th>
+                    <th scope="col">Action</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Result</th>
+                    <th scope="col">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+<script>
+var serverUrl = "https://localhost:5001";
+var serverApiUrl = serverUrl + "/api/";
+
+async function userTrack() {
+    await fetch(serverApiUrl + 'log/' + 'UserTrack',
+    {
+        credentials: 'include', // Credentials must be include to solve CORS issue
+        method: 'GET'
+    })
+    .then(response => response.text())
+    .then(msg => {
+        var table = document.getElementById("userTrackTable").getElementsByTagName('tbody')[0];
+        var logRows = msg.split('\n');
+
+        for (i = 0; i < logRows.length-1; i++) {
+            var row = table.insertRow(0);
+
+            for (j = 0; j < logRows[i].split('|').length; j++) {
+                var cell = row.insertCell();
+                if (i == logRows.length-2) {
+                    cell.className = "table-row-highlight";
+                }
+                cell.innerHTML = logRows[i].split('|')[j];
+            }
+        }
+    });
+}
+
+userTrack();
+</script>
