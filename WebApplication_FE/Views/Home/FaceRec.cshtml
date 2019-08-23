@@ -23,7 +23,7 @@
         </div>
         <div class="col-5 offset-1 round-border" style="height:516px;display:flex;justify-content:center;align-items:center;">
             <div>
-                <img id="img2" src="/ImageDatabase/blackman.jpg" style="max-width:450px; max-height:510px" alt="Image" title="title">
+                <img id="img2" src="#" style="max-width:450px; max-height:510px" alt="Image" title="title">
             </div>
         </div>
     </div>
@@ -31,7 +31,8 @@
         <!--input space-->
         <div class="col-10">
             <p>Who do you want to recognize :</p>
-            <input type="text" id="inputName" class="form-control" placeholder="Input person's name" style="height:30px">
+            <div id="showPicture">
+            </div>
         </div>
     </div>
     <br />
@@ -40,7 +41,6 @@
         <input type="button" id="compare" class="btn btn-info" value="START RECOGNIZE" style="width:1030px; height:50px" />
     </div>
 </div>
-
 @section scripts {
     <script src="~/lib/signalr/dist/browser/signalr.js"></script>
     <script src="~/js/faceRec.js" asp-append-version="true"></script>

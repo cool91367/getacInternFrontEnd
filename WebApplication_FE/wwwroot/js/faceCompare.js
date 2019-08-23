@@ -1,13 +1,18 @@
-﻿var url1 = document.getElementById("inputUrl1");
-var url2 = document.getElementById("inputUrl2");
-var img1 = document.getElementById("img1");
-var img2 = document.getElementById("img2");
-var compareButton = document.getElementById("compare");
+﻿var leftUrl = document.getElementById("inputUrlLeft");
+var rightUrl = document.getElementById("inputUrlRight");
+var imgLeft = document.getElementById("img1");
+var imgRight = document.getElementById("img2");
+var imgInputLeft = document.getElementById("imgInputLeft");
+var imgInputRight = document.getElementById("imgInputRight");
+var compareByUrl = document.getElementById("compareByUrl");
 var result = document.getElementById("result");
 var resultText = document.getElementById("resultText");
 var serverUrl = "https://localhost:5001";
 var serverSignalR = serverUrl + "/chatHub";
 var sendImageUrl = new signalR.HubConnectionBuilder().withUrl(serverSignalR).build();
+var imgCompareLeft;
+var imgCompareRight;
+var canvas = document.getElementById("cvs");
 
 // start the signalR
 sendImageUrl.start().then(function () {
@@ -17,20 +22,52 @@ sendImageUrl.start().then(function () {
 });
 
 // add image to website by input url
-url1.addEventListener("change", function () {
-    img1.src = url1.value;
+leftUrl.addEventListener("change", function () {
+    img1.src = leftUrl.value;
 });
 
 // add image to website by input url
-url2.addEventListener("change", function () {
-    img2.src = url2.value;
+rightUrl.addEventListener("change", function () {
+    img2.src = rightUrl.value;
+});
+
+// load image from local
+imgInputLeft.addEventListener("change", function () {
+    if (this.files && this.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $("#img1").attr('src', e.target.result);
+            console.log(e.target.result);
+            imgCompareLeft = e.target.result;
+        }
+        reader.readAsDataURL(this.files[0]);
+    }
+});
+
+imgInputRight.addEventListener("change", function () {
+    if (this.files && this.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $("#img2").attr('src', e.target.result);
+            console.log(e.target.result);
+            imgCompareRight = e.target.result;
+        }
+        reader.readAsDataURL(this.files[0]);
+    }
 });
 
 // send url to server
-compareButton.addEventListener("click", function () {
-    sendImageUrl.invoke("SendFaceVerifyUrl", url1.value, url2.value).catch(function (err) {
-        return console.error(err.toString());
-    });
+compareByUrl.addEventListener("click", function () {
+    if (imgCompareLeft && imgCompareRight) {
+        sendImageUrl.invoke("SendFaceVerifyByLocalImage", imgCompareLeft, imgCompareRight).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+    if (leftUrl.value != "" && rightUrl != "") {
+        sendImageUrl.invoke("SendFaceVerifyUrl", leftUrl.value, rightUrl.value).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
 });
 
 // close result text
