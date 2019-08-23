@@ -53,6 +53,8 @@ window.onload = async function() {
     var tempHtml = ""
     tempHtml = "<form id = 'contentForm'>Topics: <br>";
     for (i = 0; i < topics.length; i++) {
+        if (topics[i].topic == "FileName" || topics[i].topic == "FileContent")
+            continue;
         // add Html
         tempHtml += "<div class='custom-control custom-checkbox'>";
         tempHtml += "<input value='" + topics[i].topic + "' type='checkbox' name='topics' onclick='onChangeTopics(this.form)' class='custom-control-input' id='" + topics[i].topic + "'>"
