@@ -5,15 +5,10 @@ var topics;// complete data from DB
 var contentForm;// form object
 var contentHtml = document.getElementById('ContentText');
 var inputText = document.getElementById("textBox");
+var topicArea = document.getElementById('TopicsArea');
 
 // setting signalR's connect
 var connection = new signalR.HubConnectionBuilder().withUrl(serverSignalR).build();
-
-async function ajaxRequest(url) {
-    const result = await fetch(url, { credentials: 'include' }); // Credentials must be include to solve CORS issue
-    const jsonResult = await result.json();
-    return jsonResult;
-}
 
 // chanege time format
 function formatDate(date) {
@@ -35,22 +30,11 @@ function formatDate(date) {
 
 // show topics to web page
 window.onload = async function() {
-    var topicArea = document.getElementById('TopicsArea');
-
     // AjaxRequest
-    try {
-        topics = await ajaxRequest(serverApiUrl + 'chats');
-    }
-    catch (e) {
-        var currentPagePath = window.location.pathname;
-        var currentPageName = currentPagePath.substring(currentPagePath.lastIndexOf('/') + 1);
-        if (currentPageName == "Index") {
-            alert("Not login yet!!!");
-        }
-    }
-
+    topics = await checkLoginState();
+    
     // output topic name to topic list
-    var tempHtml = ""
+    var tempHtml = "";
     tempHtml = "<form id = 'contentForm'>Topics: <br>";
     for (i = 0; i < topics.length; i++) {
         if (topics[i].topic == "FileName" || topics[i].topic == "FileContent")
@@ -93,7 +77,6 @@ async function sendMessage() {
 // trigger send message by press enter
 inputText.addEventListener("keyup", function (event) {
     if (event.keyCode === 13) {
-        event.preventDefault();
         sendMessage();
     }
 });
@@ -122,12 +105,14 @@ function onChangeTopics() {
     }
 }
 
+// refresh content when server has new data
 function refreshContent() {
     onChangeTopics();
     // scroll to bottom
     contentHtml.scrollTop = contentHtml.scrollHeight;
 }
 
+/*
 async function authResponse(authType) {
     if (authType == 'Logout') {
         await fetch(serverApiUrl + 'auth/' + authType,
@@ -210,7 +195,7 @@ function showUser() {
     if (cookies != null) {
         document.getElementById("userId").innerHTML = "userId ： " + cookies;
     }
-}
+}*/
 
 // listen to server's hub
 connection.on("ReceiveMessage", async function (data) {

@@ -12,15 +12,11 @@ var imgArray;
 var timeoutFunction;
 var pictureName;
 var compareName;
-var i = 0;
 
-async function ajaxRequest(url) {
-    const result = await fetch(url, { credentials: 'include' }); // Credentials must be include to solve CORS issue
-    const jsonResult = await result.json();
-    return jsonResult;
-}
+
 // load image for animation;
 window.onload = async function () {
+    await checkLoginState();
     pictureName = await ajaxRequest(serverUrl + '/api/values/getPictureName');
     showPictureName();
     imgArray = new Array();
@@ -36,37 +32,34 @@ sendImageUrl.start().then(function () {
     return err.toString();
 });
 
-// add image to website by input url
-/*url1.addEventListener("change", function () {
-    img1.src ="/B3Image/" + url1.value;
-});*/
-
+// play searching animation
+var pictureAnimation = 0;
 function imgAnimation() {
-    i = i % 3;
-    img2.src = imgArray[i];
-    i++;
+    pictureAnimation = pictureAnimation % 3;
+    img2.src = imgArray[pictureAnimation];
+    pictureAnimation++;
     timeoutFunction = setTimeout(imgAnimation, 100);
 }
 
+// show picture name in backend
 function showPictureName() {
     for (i = 0; i < pictureName.length; i++) {
         showPicture.innerHTML += "<input type='button' value='" + pictureName[i] + "' onclick='imgSrc(this)'> ";
     }
 }
 
+// show picture in backend
 async function imgSrc(ev) {
     var picture = await ajaxRequest(serverUrl + '/api/values/getPicture/' + ev.value);
     compareName = ev.value;
     img1.src = "data:image/jpeg;base64," + picture[0];
-    //console.log(picture[0]);
 }
 
 
 
-// send url to server
+// send url or picture name to server
 compareButton.addEventListener("click", function () {
     // play image animation
-    console.log("click");
     imgAnimation();
     sendImageUrl.invoke("SendFaceCompareName", compareName).catch(function (err) {
         return console.error(err.toString());

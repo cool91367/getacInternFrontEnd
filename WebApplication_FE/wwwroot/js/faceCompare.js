@@ -12,7 +12,10 @@ var serverSignalR = serverUrl + "/chatHub";
 var sendImageUrl = new signalR.HubConnectionBuilder().withUrl(serverSignalR).build();
 var imgCompareLeft;
 var imgCompareRight;
-var canvas = document.getElementById("cvs");
+
+window.onload = async function () {
+    await checkLoginState();
+}
 
 // start the signalR
 sendImageUrl.start().then(function () {
@@ -31,25 +34,24 @@ rightUrl.addEventListener("change", function () {
     img2.src = rightUrl.value;
 });
 
-// load image from local
+// load image from local(left)
 imgInputLeft.addEventListener("change", function () {
     if (this.files && this.files[0]) {
         var reader = new FileReader();
         reader.onload = function (e) {
             $("#img1").attr('src', e.target.result);
-            console.log(e.target.result);
             imgCompareLeft = e.target.result;
         }
         reader.readAsDataURL(this.files[0]);
     }
 });
 
+// load image from local(right)
 imgInputRight.addEventListener("change", function () {
     if (this.files && this.files[0]) {
         var reader = new FileReader();
         reader.onload = function (e) {
             $("#img2").attr('src', e.target.result);
-            console.log(e.target.result);
             imgCompareRight = e.target.result;
         }
         reader.readAsDataURL(this.files[0]);
